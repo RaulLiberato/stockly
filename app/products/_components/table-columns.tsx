@@ -101,7 +101,10 @@ export const productsTableColumns: ColumnDef<Product>[] = [
               </AlertDialogTrigger>
             </DropdownMenuContent>
           </DropdownMenu>
-          <DeleteProductDialogContent productId={product.id} />
+          <DeleteProductDialogContent
+            productId={product.id}
+            productName={product.name}
+          />
         </AlertDialog>
       );
     },

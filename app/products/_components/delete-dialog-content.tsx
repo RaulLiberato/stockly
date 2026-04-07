@@ -12,10 +12,12 @@ import { toast } from "sonner";
 
 interface DeleteProductDialogContentProps {
   productId: string;
+  productName?: string;
 }
 
 const DeleteProductDialogContent = ({
   productId,
+  productName,
 }: DeleteProductDialogContentProps) => {
   const handleContinueClick = async () => {
     try {
@@ -30,8 +32,7 @@ const DeleteProductDialogContent = ({
       <AlertDialogHeader>
         <AlertDialogTitle>Deletar produto</AlertDialogTitle>
         <AlertDialogDescription>
-          Você está prestes a deletar este produto. Esta ação não pode ser
-          desfeita. Deseja continuar?
+          {`Você está prestes a deletar o produto "${productName}". Esta ação não pode ser desfeita. Deseja continuar?`}
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
