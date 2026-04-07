@@ -31,10 +31,18 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { upsertProduct } from "@/app/_actions/product/upsert-product";
 import { Button } from "@/app/_components/ui/button";
 
+import { useEffect } from "react";
+
 interface UpsertProductLogContentProps {
   defaultValues?: UpsertProductSchema;
   onSuccess?: () => void;
 }
+
+const emptyValues: UpsertProductSchema = {
+  name: "",
+  price: 0,
+  stock: 1,
+};
 
 const UpsertProductLogContent = ({
   defaultValues,
@@ -43,12 +51,12 @@ const UpsertProductLogContent = ({
   const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
     resolver: zodResolver(upsertProductSchema),
-    defaultValues: defaultValues ?? {
-      name: "",
-      price: 0,
-      stock: 1,
-    },
+    defaultValues: defaultValues ?? emptyValues,
   });
+
+  useEffect(() => {
+    form.reset(defaultValues ?? emptyValues);
+  }, [defaultValues, form]);
 
   const isEditing = !!defaultValues;
 
