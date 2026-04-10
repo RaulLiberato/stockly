@@ -38,6 +38,8 @@ import z from "zod";
 import TableDropdownMenu from "./table-dropdown-menu";
 import { createSale } from "@/app/_actions/sale/create-sale";
 import { toast } from "sonner";
+import { useAction } from "next-safe-action/hooks";
+import { flattenValidationErrors } from "next-safe-action";
 
 const formSchema = z.object({
   productId: z.string().uuid({ message: "O produto é obrigatório" }),
@@ -65,6 +67,17 @@ const UpsertSheetContent = ({
   setSheetIsOpen,
 }: UpsertSheetContentProps) => {
   const [selectedProduct, setSelectedProduct] = useState<SelectedProduct[]>([]);
+
+  const { execute: executeCreateSale } = useAction(createSale, {
+    onError: ({ error: { validationErrors, serverError } }) => {
+      const flattenedErrors = flattenValidationErrors(validationErrors);
+      toast.error(serverError ?? flattenedErrors.formErrors[0]);
+    },
+    onSuccess: () => {
+      toast.success("Venda realizada com sucesso.");
+      setSheetIsOpen(false);
+    },
+  });
 
   const form = useForm<formSchema>({
     resolver: zodResolver(formSchema),
@@ -136,18 +149,13 @@ const UpsertSheetContent = ({
   };
 
   const onSubmitSale = async () => {
-    try {
-      await createSale({
-        products: selectedProduct.map((product) => ({
-          id: product.id,
-          quantity: product.quantity,
-        })),
-      });
-      toast.success("Venda criada com sucesso!");
-      setSheetIsOpen(false);
-    } catch (error) {
-      toast.error("Erro ao realizar a venda.");
-    }
+    executeCreateSale({
+      products: selectedProduct.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      })),
+    });
+    setSheetIsOpen(false);
   };
   return (
     <SheetContent className="!max-w-[700px]">
